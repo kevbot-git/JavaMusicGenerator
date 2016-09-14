@@ -43,9 +43,11 @@ public class Generator implements Runnable {
     }
     
     public void start() {
-        thread = new Thread(this);
-        thread.start();
-        playing = true;
+        if(!playing) {
+            thread = new Thread(this);
+            thread.start();
+            playing = true;
+        }
     }
     
     public void stop() {
@@ -55,6 +57,6 @@ public class Generator implements Runnable {
     
     @Override
     public void run() {
-        randomlyGenerate(60, 72);
+        randomlyGenerate(36, 48);
     }
 }

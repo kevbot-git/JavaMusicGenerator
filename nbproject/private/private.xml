@@ -5,7 +5,9 @@
         <group>
             <file>file:/C:/Users/kamen/Documents/Nerdy/Projects/JavaMusicGenerator/src/com/kevinmenhinick/generativemusic/ui/Application.java</file>
             <file>file:/C:/Users/kamen/Documents/Nerdy/Projects/JavaMusicGenerator/src/com/kevinmenhinick/generativemusic/Generator.java</file>
+            <file>file:/C:/Users/kamen/Documents/Nerdy/Projects/JavaMusicGenerator/src/com/kevinmenhinick/generativemusic/Drums.java</file>
             <file>file:/C:/Users/kamen/Documents/Nerdy/Projects/JavaMusicGenerator/src/com/kevinmenhinick/generativemusic/Synth.java</file>
+            <file>file:/C:/Users/kamen/Documents/Nerdy/Projects/JavaMusicGenerator/src/com/kevinmenhinick/generativemusic/Note.java</file>
         </group>
     </open-files>
 </project-private>

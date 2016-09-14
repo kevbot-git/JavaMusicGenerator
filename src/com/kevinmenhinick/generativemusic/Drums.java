@@ -3,6 +3,6 @@ package com.kevinmenhinick.generativemusic;
 public class Drums extends Synth {
     
     public Drums() {
-        super(1);
+        super(9, 0);
     }
 }

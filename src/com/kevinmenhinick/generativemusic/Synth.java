@@ -13,20 +13,22 @@ public class Synth {
     private Instrument[] instruments;
     private MidiChannel[] channels;
     private int instrument;
+    private int channel;
     
-    public Synth(int instrument) {
+    public Synth(int channel, int instrument) {
+        this.channel = channel;
         this.instrument = instrument;
     }
     
     public Synth() {
-        this(0);
+        this(0, 0);
     }
     
     public void playNote(Note note) {
         try {
-            channels[0].noteOn(note.getNote(), note.getVelocity());
+            channels[channel].noteOn(note.getNote(), note.getVelocity());
             Thread.sleep(note.getMillis());
-            channels[0].noteOff(note.getNote());
+            channels[channel].noteOff(note.getNote());
         } catch(InterruptedException e) { }
     }
     
@@ -41,7 +43,7 @@ public class Synth {
             
             midiSynth.loadInstrument(instruments[instrument]);
             
-            channels[0].programChange(instrument);
+            channels[channel].programChange(instrument);
             
             System.out.println(instruments[instrument].getName());
         } catch(MidiUnavailableException e) {
