@@ -1,6 +1,7 @@
 package com.kevinmenhinick.generativemusic;
 
 import com.kevinmenhinick.generativemusic.exception.GeneratorException;
+import java.util.Iterator;
 import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -29,6 +30,21 @@ public class Synth {
             channels[channel].noteOn(note.getNote(), note.getVelocity());
             Thread.sleep(note.getMillis());
             channels[channel].noteOff(note.getNote());
+        } catch(InterruptedException e) { }
+    }
+    
+    public void playChord(Chord chord) {
+        try {
+            Iterator<Note> it = chord.getIterator();
+            while(it.hasNext()) {
+                Note n = it.next();
+                channels[channel].noteOn(n.getNote(), n.getVelocity());
+            }
+            Thread.sleep(chord.bassNote().getMillis());
+            it = chord.getIterator();
+            while(it.hasNext()) {
+                channels[channel].noteOff(it.next().getNote());
+            }
         } catch(InterruptedException e) { }
     }
     

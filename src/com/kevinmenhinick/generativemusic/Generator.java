@@ -12,10 +12,10 @@ public class Generator implements Runnable {
     private boolean playing;
     
     public Generator() throws GeneratorException {
-        //synth = new Synth();
-        drums = new Drums();
-        //synth.open();
-        drums.open();
+        synth = new Synth();
+        //drums = new Drums();
+        synth.open();
+        //drums.open();
     }
 
     private void playBar() {
@@ -36,10 +36,11 @@ public class Generator implements Runnable {
     }
     
     private void randomlyGenerate(int lowerBound, int upperBound) {
-        do {
-            Note n = new Note((new Random()).nextInt() % (upperBound - lowerBound) + lowerBound, 127, 500);
-            drums.playNote(n);
-        } while(playing);
+        Note n = new Note((new Random()).nextInt() % (upperBound - lowerBound) + lowerBound, 127, 500);
+        Note n1 = new Note(n.getNote() + 4, 127, 500);
+        Note n2 = new Note(n.getNote() + 7, 127, 500);
+        
+        synth.playChord(new Chord(n, n1, n2));
     }
     
     public void start() {
@@ -57,6 +58,12 @@ public class Generator implements Runnable {
     
     @Override
     public void run() {
-        randomlyGenerate(36, 48);
+        do {
+            randomlyGenerate(64, 72);
+        } while(playing);
+    }
+    
+    public boolean isPlaying() {
+        return playing;
     }
 }

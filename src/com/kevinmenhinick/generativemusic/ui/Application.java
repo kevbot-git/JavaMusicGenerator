@@ -2,6 +2,7 @@ package com.kevinmenhinick.generativemusic.ui;
 
 import com.kevinmenhinick.generativemusic.Generator;
 import com.kevinmenhinick.generativemusic.exception.GeneratorException;
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -61,12 +62,14 @@ public class Application extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 generator.start();
+                btnStop.setBackground(Color.RED);
             }
         });
         btnStop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 generator.stop();
+                btnStop.setBackground(new Color(238, 238, 238));
             }
         });
     }
