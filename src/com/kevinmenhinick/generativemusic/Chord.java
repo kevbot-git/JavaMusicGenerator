@@ -1,5 +1,6 @@
 package com.kevinmenhinick.generativemusic;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -24,6 +25,30 @@ public class Chord {
     
     public Note bassNote() {
         return this.notes.getFirst();
+    }
+    
+    public static Chord createMajor(Note rootNote) {
+        return create(rootNote, 1, 4, 7);
+    }
+    
+    public static Chord createMinor(Note rootNote) {
+        return create(rootNote, 1, 3, 7);
+    }
+    
+    public static Chord create(Note rootNote, Integer... intervalIndexes) {
+        ArrayList<Note> notes = new ArrayList<Note>();
+        
+        if(intervalIndexes.length > 0) {
+            for(Integer i: intervalIndexes) {
+                if(i == 1) {
+                    notes.add(rootNote);
+                }
+                else {
+                    notes.add(new Note(rootNote.getNote() + i, rootNote.getVelocity(), rootNote.getMillis()));
+                }
+            }
+        }
+        return new Chord(notes.toArray(new Note[notes.size()]));
     }
     
 }

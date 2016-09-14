@@ -17,30 +17,12 @@ public class Generator implements Runnable {
         synth.open();
         //drums.open();
     }
-
-    private void playBar() {
-        ArrayList<Note> sequence = new ArrayList();
-        sequence.add(new Note(60, 127, 750));
-        sequence.add(new Note(62, 127, 250));
-        sequence.add(new Note(64, 127, 750));
-        sequence.add(new Note(60, 127, 250));
-        sequence.add(new Note(64, 127, 500));
-        sequence.add(new Note(60, 127, 500));
-        sequence.add(new Note(64, 127, 1000));
-        
-        for(Note n: sequence) {
-            if(playing) {
-                //synth.playNote(n);
-            }
-        }
-    }
     
     private void randomlyGenerate(int lowerBound, int upperBound) {
         Note n = new Note((new Random()).nextInt() % (upperBound - lowerBound) + lowerBound, 127, 500);
-        Note n1 = new Note(n.getNote() + 4, 127, 500);
-        Note n2 = new Note(n.getNote() + 7, 127, 500);
         
-        synth.playChord(new Chord(n, n1, n2), 40);
+        synth.playChord(Chord.createMajor(n), 40);
+        synth.playChord(Chord.createMinor(n), 40);
     }
     
     public void start() {
