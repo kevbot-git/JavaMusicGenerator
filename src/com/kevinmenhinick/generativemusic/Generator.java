@@ -40,7 +40,7 @@ public class Generator implements Runnable {
         Note n1 = new Note(n.getNote() + 4, 127, 500);
         Note n2 = new Note(n.getNote() + 7, 127, 500);
         
-        synth.playChord(new Chord(n, n1, n2));
+        synth.playChord(new Chord(n, n1, n2), 40);
     }
     
     public void start() {
@@ -59,6 +59,7 @@ public class Generator implements Runnable {
     @Override
     public void run() {
         do {
+            //randomlyGenerate(36, 48);
             randomlyGenerate(64, 72);
         } while(playing);
     }

@@ -33,12 +33,13 @@ public class Synth {
         } catch(InterruptedException e) { }
     }
     
-    public void playChord(Chord chord) {
+    public void playChord(Chord chord, int strumTime) {
         try {
             Iterator<Note> it = chord.getIterator();
             while(it.hasNext()) {
                 Note n = it.next();
                 channels[channel].noteOn(n.getNote(), n.getVelocity());
+                if(strumTime > 0) Thread.sleep(strumTime);
             }
             Thread.sleep(chord.bassNote().getMillis());
             it = chord.getIterator();
@@ -46,6 +47,10 @@ public class Synth {
                 channels[channel].noteOff(it.next().getNote());
             }
         } catch(InterruptedException e) { }
+    }
+    
+    public void playChord(Chord chord) {
+        playChord(chord, 0);
     }
     
     public void open() throws GeneratorException {
