@@ -45,8 +45,8 @@ public class Application extends javax.swing.JFrame {
         pnlBottom = new JPanel(new GridLayout(2, 1));
         pnlBottom.setSize(320, 80);
         
-        btnGenerate = new JButton("Generate one 4/4 bar");
-        btnStop = new JButton("Stop playing");
+        btnGenerate = new JButton("Start generating");
+        btnStop = new JButton("Stop");
     }
     
     private void addComponents() {
