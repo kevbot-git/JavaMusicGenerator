@@ -44,13 +44,15 @@ public class Generator implements Runnable {
     public void run() {
         do {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(60000 / tempo);
                 synchronized (beat) {
+                    beat.nextBeat();
                     beat.notifyAll();
+                    System.out.println("Notified...");
                 }
             } catch(InterruptedException e) { }
-            System.out.println("Notified...");
-            beat.nextBeat();
+            //System.out.println("Notified...");
+            //beat.nextBeat();
         } while(playing);
     }
     

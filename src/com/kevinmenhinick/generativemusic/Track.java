@@ -36,15 +36,17 @@ public class Track implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("Started listening...");
         do {
             try {
-                System.out.println("Wait...");
+                System.out.println("Waiting...");
                 synchronized(beat) {
                     beat.wait();
                 }
             } catch(InterruptedException e) { }
-            System.out.println("Beat: ");// + beat.beat());
+            System.out.println("Beat: " + beat.beat());
         } while(playing);
+        System.out.println("Finished listening.");
     }
     
     public Synth getInstrument() {
