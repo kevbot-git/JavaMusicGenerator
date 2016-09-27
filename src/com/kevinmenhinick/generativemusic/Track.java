@@ -36,17 +36,34 @@ public class Track implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Started listening...");
+        //System.out.println("Started listening...");
+        boolean firstCountOfOne = true;
         do {
             try {
-                System.out.println("Waiting...");
+                //System.out.println("Waiting...");
                 synchronized(beat) {
                     beat.wait();
                 }
             } catch(InterruptedException e) { }
-            System.out.println("Beat: " + beat.beat());
+            
+            if(firstCountOfOne)
+                if(beat.beat() == 1)
+                    firstCountOfOne = false;
+            
+            if(!firstCountOfOne) {
+                System.out.println("Beat: " + beat.beat());
+                if(beat.beat() % 2 == 0) { // 2 & 4
+                    System.out.println("Was 2 or 4");
+                    getInstrument().playNote(new Note(40, 127, maxLengthFromBeat(beat)));
+                }
+                getInstrument().playNote(new Note(35, 127, maxLengthFromBeat(beat)));
+            }
         } while(playing);
-        System.out.println("Finished listening.");
+        //System.out.println("Finished listening.");
+    }
+    
+    public static int maxLengthFromBeat(BeatTracker beatTracker) {
+        return (6000 / beatTracker.tempo() - 1);
     }
     
     public Synth getInstrument() {

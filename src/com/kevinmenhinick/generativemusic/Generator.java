@@ -14,14 +14,13 @@ public class Generator implements Runnable {
     private List<Track> syncedTracks;
     private Thread thread;
     private boolean playing;
-    private int tempo;
     private BeatTracker beat;
     
     public Generator() throws GeneratorException {
-        beat = new BeatTracker(4);
+        beat = new BeatTracker(120, 4);
         syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
         syncedTracks.add(new Track(new Drums(), beat));
-        tempo = 120;
+        //syncedTracks.add(new Track(new Drums(), beat));
     }
     
     public void start() {
@@ -44,15 +43,14 @@ public class Generator implements Runnable {
     public void run() {
         do {
             try {
-                Thread.sleep(60000 / tempo);
+                Thread.sleep(60000 / beat.tempo());
                 synchronized (beat) {
                     beat.nextBeat();
                     beat.notifyAll();
-                    System.out.println("Notified...");
+                    //System.out.println("Notified...");
                 }
             } catch(InterruptedException e) { }
             //System.out.println("Notified...");
-            //beat.nextBeat();
         } while(playing);
     }
     
