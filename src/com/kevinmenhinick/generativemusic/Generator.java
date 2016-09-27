@@ -2,71 +2,59 @@ package com.kevinmenhinick.generativemusic;
 
 import com.kevinmenhinick.generativemusic.exception.GeneratorException;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Generator implements Runnable {
     
-    private Track t1;
+    private List<Track> syncedTracks;
     private Thread thread;
     private boolean playing;
-    private int beatsPerBar;
-    private int beat = 1;
+    private int tempo;
+    private BeatTracker beat;
     
     public Generator() throws GeneratorException {
-        t1 = new Track(new Drums());
-        beatsPerBar = 4;
+        beat = new BeatTracker(4);
+        syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
+        syncedTracks.add(new Track(new Drums(), beat));
+        tempo = 120;
     }
-    
-    private void randomlyGenerate(Synth synth, int lowerBound, int upperBound) {
-        Note n = new Note((new Random()).nextInt() % (upperBound - lowerBound) + lowerBound, 127, 500);
-        //synth.playChord(Chord.createMajor(n), 40);
-        synth.playChord(Chord.createMajor(new Note(64, 40, 500)), 40);
-        nextBeat();
-    }
-    
-    
     
     public void start() {
         if(!playing) {
             thread = new Thread(this);
             playing = true;
             thread.start();
+            for(Track t: syncedTracks)
+                t.start();
         }
     }
     
     public void stop() {
         playing = false;
-        t1.stop();
+        for(Track t: syncedTracks)
+            t.stop();
     }
     
     @Override
     public void run() {
-        t1.start();
         do {
             try {
-                //randomlyGenerate(36, 48);
-                //randomlyGenerate(synth, 64, 72);
-                Thread.sleep(10000);
-            } catch (Exception ex) { }
-            t1.interval = 100;
-            
+                Thread.sleep(1000);
+                synchronized (beat) {
+                    beat.notifyAll();
+                }
+            } catch(InterruptedException e) { }
+            System.out.println("Notified...");
+            beat.nextBeat();
         } while(playing);
-        System.out.println("Finished");
-        t1.stop();
     }
     
     public boolean isPlaying() {
         return playing;
     }
-    
-    public void nextBeat() {
-        beat = beat % beatsPerBar + 1;
-    }
-    
-    public int getBeat() {
-        return beat;
-    }
-    
 }

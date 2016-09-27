@@ -1,15 +1,17 @@
 package com.kevinmenhinick.generativemusic;
 
 import com.kevinmenhinick.generativemusic.exception.GeneratorException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Track implements Runnable {
     
     private Synth instrument;
     private Thread thread;
     private boolean playing;
-    public int interval = 300;
+    private BeatTracker beat;
     
-    public Track(Synth instrument) {
+    public Track(Synth instrument, BeatTracker beatTracker) {
         this.instrument = instrument;
         this.playing = false;
         try {
@@ -17,10 +19,7 @@ public class Track implements Runnable {
         } catch(GeneratorException e) {
             System.out.println(e);
         }
-    }
-    
-    private void generate() {
-        instrument.playNote(new Note(35, 127, interval));
+        beat = beatTracker;
     }
     
     public void start() {
@@ -38,7 +37,13 @@ public class Track implements Runnable {
     @Override
     public void run() {
         do {
-            generate();
+            try {
+                System.out.println("Wait...");
+                synchronized(beat) {
+                    beat.wait();
+                }
+            } catch(InterruptedException e) { }
+            System.out.println("Beat: ");// + beat.beat());
         } while(playing);
     }
     
