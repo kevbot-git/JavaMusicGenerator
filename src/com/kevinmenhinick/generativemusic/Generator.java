@@ -22,6 +22,16 @@ public class Generator implements Runnable {
         beat = new Beat(randRange(r, 110, 300), 4);
         syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
         syncedTracks.add(new DrumTrack(new Drums(), beat));
+        syncedTracks.add(new Track(new Synth(), beat) {
+            int total = 0;
+            @Override
+            public void generateOnBeat(Beat beat) {
+                total++;
+                if(total % 8 == 1)
+                    getInstrument().playChord(Chord.createMinor(new Note(48, 127)), beat.length(16, 1));
+                //System.out.println("Total: " + total);
+            }
+        });
     }
     
     public void start() {
@@ -48,10 +58,8 @@ public class Generator implements Runnable {
                 synchronized (beat) {
                     beat.nextBeat();
                     beat.notifyAll();
-                    //System.out.println("Notified...");
                 }
             } catch(InterruptedException e) { }
-            //System.out.println("Notified...");
         } while(playing);
     }
     

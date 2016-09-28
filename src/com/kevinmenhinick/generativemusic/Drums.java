@@ -10,6 +10,9 @@ public class Drums extends Synth {
     public static final int SNARE_RIM = 37;
     public static final int SNARE_1 = 38;
     public static final int SNARE_2 = 40;
+    public static final int HAT_CLOSED = 42;
+    public static final int HAT_OPEN = 46;
+    public static final int RIDE = 51;
     public static final int CLAP = 39;
     public static final int TOM_1 = 41;
     public static final int TOM_2 = 43;
@@ -24,11 +27,11 @@ public class Drums extends Synth {
     
     
     public static int randomAccentHit() {
-        return randomFrom(new int[] {SNARE_1, SNARE_2, CLAP, TOM_1, TOM_2});
+        return randomFrom(new int[] {SNARE_1, SNARE_2, CLAP});
     }
     
     public static int randomTickHit() {
-        return randomFrom(new int[] {STICK_HIT});
+        return randomFrom(new int[] {HAT_CLOSED, RIDE});
     }
     
     private static int randomFrom(int[] selection) {
