@@ -25,15 +25,15 @@ public class Synth {
         this(0, 0);
     }
     
-    public void playNote(Note note) {
+    public void playNote(Note note, int millis) {
         try {
             channels[channel].noteOn(note.getNote(), note.getVelocity());
-            Thread.sleep(note.getMillis());
+            Thread.sleep(millis);
             channels[channel].noteOff(note.getNote());
         } catch(InterruptedException e) { }
     }
     
-    public void playChord(Chord chord, int strumTime) {
+    public void playChord(Chord chord, int millis, int strumTime) {
         try {
             Iterator<Note> it = chord.getIterator();
             while(it.hasNext()) {
@@ -41,7 +41,7 @@ public class Synth {
                 channels[channel].noteOn(n.getNote(), n.getVelocity());
                 if(strumTime > 0) Thread.sleep(strumTime);
             }
-            Thread.sleep(chord.bassNote().getMillis());
+            Thread.sleep(millis);
             it = chord.getIterator();
             while(it.hasNext()) {
                 channels[channel].noteOff(it.next().getNote());
@@ -49,8 +49,8 @@ public class Synth {
         } catch(InterruptedException e) { }
     }
     
-    public void playChord(Chord chord) {
-        playChord(chord, 0);
+    public void playChord(Chord chord, int millis) {
+        playChord(chord, millis, 0);
     }
     
     public void open() throws GeneratorException {
@@ -65,8 +65,6 @@ public class Synth {
             midiSynth.loadInstrument(instruments[instrument]);
             
             channels[channel].programChange(instrument);
-            
-            System.out.println(instruments[instrument].getName());
         } catch(MidiUnavailableException e) {
             throw new GeneratorException();
         }

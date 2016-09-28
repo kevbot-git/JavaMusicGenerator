@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,13 +15,13 @@ public class Generator implements Runnable {
     private List<Track> syncedTracks;
     private Thread thread;
     private boolean playing;
-    private BeatTracker beat;
+    private Beat beat;
     
     public Generator() throws GeneratorException {
-        beat = new BeatTracker(120, 4);
+        Random r = new Random();
+        beat = new Beat(randRange(r, 110, 300), 4);
         syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
-        syncedTracks.add(new Track(new Drums(), beat));
-        //syncedTracks.add(new Track(new Drums(), beat));
+        syncedTracks.add(new DrumTrack(new Drums(), beat));
     }
     
     public void start() {
@@ -56,5 +57,9 @@ public class Generator implements Runnable {
     
     public boolean isPlaying() {
         return playing;
+    }
+    
+    public static int randRange(Random r, int min, int max) {
+        return (Math.abs(r.nextInt()) % (max - min) + min);
     }
 }

@@ -11,12 +11,10 @@ public class Note {
     
     private int note;
     private int velocity;
-    private int millis;
     
-    public Note(int note, int velocity, int millis) {
+    public Note(int note, int velocity) {
         this.note = note;
         this.velocity = velocity;
-        this.millis = millis;
     }
 
     public int getNote() {
@@ -25,9 +23,5 @@ public class Note {
 
     public int getVelocity() {
         return velocity;
-    }
-
-    public int getMillis() {
-        return millis;
     }
 }

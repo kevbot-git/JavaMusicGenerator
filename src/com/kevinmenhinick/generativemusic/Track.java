@@ -4,14 +4,14 @@ import com.kevinmenhinick.generativemusic.exception.GeneratorException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Track implements Runnable {
+public abstract class Track implements Runnable {
     
     private Synth instrument;
     private Thread thread;
     private boolean playing;
-    private BeatTracker beat;
+    private Beat beat;
     
-    public Track(Synth instrument, BeatTracker beatTracker) {
+    public Track(Synth instrument, Beat beatTracker) {
         this.instrument = instrument;
         this.playing = false;
         try {
@@ -34,9 +34,12 @@ public class Track implements Runnable {
         playing = false;
     }
 
+    public abstract void generateOnBeat(Beat beat);
+    
     @Override
     public void run() {
         //System.out.println("Started listening...");
+        int total = 40;
         boolean firstCountOfOne = true;
         do {
             try {
@@ -51,19 +54,14 @@ public class Track implements Runnable {
                     firstCountOfOne = false;
             
             if(!firstCountOfOne) {
-                System.out.println("Beat: " + beat.beat());
-                if(beat.beat() % 2 == 0) { // 2 & 4
-                    System.out.println("Was 2 or 4");
-                    getInstrument().playNote(new Note(40, 127, maxLengthFromBeat(beat)));
-                }
-                getInstrument().playNote(new Note(35, 127, maxLengthFromBeat(beat)));
+                generateOnBeat(beat);
             }
         } while(playing);
         //System.out.println("Finished listening.");
     }
     
-    public static int maxLengthFromBeat(BeatTracker beatTracker) {
-        return (6000 / beatTracker.tempo() - 1);
+    public static int maxLengthFromBeat(Beat beatTracker) {
+        return (6000 / beatTracker.tempo());
     }
     
     public Synth getInstrument() {

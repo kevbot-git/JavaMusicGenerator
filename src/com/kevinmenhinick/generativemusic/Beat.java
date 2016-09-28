@@ -1,15 +1,19 @@
 package com.kevinmenhinick.generativemusic;
 
-public class BeatTracker {
+public class Beat {
     
     private int tempo;
     private int beat;
     private int of;
     
-    public BeatTracker(int tempo, int beatsPerBar) {
+    public Beat(int tempo, int beatsPerBar) {
         this.tempo = tempo;
         beat = 1;
         of = beatsPerBar;
+    }
+    
+    public int length(int numerator, int denominator) {
+        return (6000 / this.tempo() / denominator * numerator);
     }
     
     public int tempo() {

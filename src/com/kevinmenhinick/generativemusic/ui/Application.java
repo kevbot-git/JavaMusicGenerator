@@ -61,8 +61,15 @@ public class Application extends javax.swing.JFrame {
         btnGenerate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                generator.start();
-                btnStop.setBackground(Color.RED);
+                if(!generator.isPlaying()) {
+                    try {
+                        generator = new Generator();
+                    } catch(GeneratorException ex) {
+                        System.exit(0);
+                    }
+                    generator.start();
+                    btnStop.setBackground(Color.RED);
+                }
             }
         });
         btnStop.addActionListener(new ActionListener() {

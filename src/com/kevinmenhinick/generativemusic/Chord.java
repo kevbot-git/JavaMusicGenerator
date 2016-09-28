@@ -15,7 +15,7 @@ public class Chord {
         }
         if(notes.length == 0) {
             System.out.println("Warning: Chord was passed 0 notes in constructor");
-            this.notes.add(new Note(64, 50, 500));
+            this.notes.add(new Note(64, 50));
         }
     }
     
@@ -44,7 +44,7 @@ public class Chord {
                     notes.add(rootNote);
                 }
                 else {
-                    notes.add(new Note(rootNote.getNote() + i, rootNote.getVelocity(), rootNote.getMillis()));
+                    notes.add(new Note(rootNote.getNote() + i, rootNote.getVelocity()));
                 }
             }
         }
