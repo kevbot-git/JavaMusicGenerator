@@ -20,15 +20,25 @@ public class Generator implements Runnable {
     public Generator() throws GeneratorException {
         Random r = new Random();
         beat = new Beat(randRange(r, 110, 300), 4);
+        System.out.println("Tempo: " + beat.tempo());
+        Synth.nextChannel = 0;
         syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
-        syncedTracks.add(new DrumTrack(new Drums(), beat));
         syncedTracks.add(new Track(new Synth(), beat) {
             int total = 0;
             @Override
             public void generateOnBeat(Beat beat) {
                 total++;
                 if(total % 8 == 1)
-                    getInstrument().playChord(Chord.createMinor(new Note(48, 127)), beat.length(16, 1));
+                    getInstrument().playChord(Chord.createMinor(new Note((r.nextInt() % 2 == 0)? 48: 55, 127)), beat.length(16, 1));
+                //System.out.println("Total: " + total);
+            }
+        });
+        syncedTracks.add(new Track(new Synth(), beat) {
+            int total = 0;
+            @Override
+            public void generateOnBeat(Beat beat) {
+                total++;
+                getInstrument().playNote(new Note(36, 127), beat.length(1, 1));
                 //System.out.println("Total: " + total);
             }
         });

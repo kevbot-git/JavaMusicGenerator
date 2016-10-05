@@ -32,6 +32,7 @@ public abstract class Track implements Runnable {
     
     public void stop() {
         playing = false;
+        instrument.close();
     }
 
     public abstract void generateOnBeat(Beat beat);

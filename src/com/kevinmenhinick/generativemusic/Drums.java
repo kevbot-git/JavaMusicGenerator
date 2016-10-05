@@ -18,7 +18,7 @@ public class Drums extends Synth {
     public static final int TOM_2 = 43;
     
     public Drums() {
-        super(9, 0);
+        super();
     }
     
     public static int randomBassHit() {
