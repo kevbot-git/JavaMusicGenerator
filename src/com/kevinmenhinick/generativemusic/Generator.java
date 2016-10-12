@@ -15,12 +15,14 @@ public class Generator implements Runnable {
     private List<Track> syncedTracks;
     private Thread thread;
     private boolean playing;
+    private Key key;
     private Beat beat;
     
     public Generator() throws GeneratorException {
         Random r = new Random();
+        key = new MajorKey(Math.abs(r.nextInt()));
         beat = new Beat(randRange(r, 110, 300), 4);
-        System.out.println("Tempo: " + beat.tempo());
+        System.out.println("Tempo: " + beat.tempo() + ", Key: " + key.of());
         Synth.nextChannel = 0;
         syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
         
@@ -29,8 +31,7 @@ public class Generator implements Runnable {
             int total = 0;
             @Override
             public void generateOnBeat(Beat beat) {
-                System.out.println("Total: " + ++total);
-                getInstrument().playNote(new Note(36, 127), beat.length(9, 10));
+                getInstrument().playNote(new Note(key.getRoot() + 36, 127), beat.length(9, 10));
             }
         });
         
@@ -39,8 +40,25 @@ public class Generator implements Runnable {
             int total = 0;
             @Override
             public void generateOnBeat(Beat beat) {
-                if(total++ % 8 == 0)
-                    getInstrument().playChord(Chord.createMajor(new Note((r.nextInt() % 2 == 0)? 48: 55, 127)), beat.length(2, 1));
+                if(total++ % 8 == 0) {
+                    // Possibly change key
+                    if(r.nextInt() % 10 == 0) {
+                        if(r.nextInt() % 3 == 0)
+                            key = key.modulate((Math.abs(r.nextInt()) % 6) * 2 - 5);
+                        else
+                            key = key.relative();
+                        System.out.println("New key: " + key.of());
+                    }
+                    
+                    // Play chord
+                    if(key instanceof MajorKey) {
+                        getInstrument().playChord(Chord.createMajor(new Note(key.getRoot() + 48 + ((r.nextInt() % 2 == 0)? 0: 7), 127)), beat.length(2, 1));
+                    }
+                    else {
+                        getInstrument().playChord(Chord.createMinor(new Note(key.getRoot() + 48 + ((r.nextInt() % 2 == 0)? 0: 7), 127)), beat.length(2, 1));
+                    }
+                }
+                
             }
         });
         
@@ -51,8 +69,9 @@ public class Generator implements Runnable {
             @Override
             public void generateOnBeat(Beat beat) {
                 if(++total == length) {
-                    System.out.println(length);
-                    getInstrument().playNote(new Note((Scale.MAJOR[Math.abs(r.nextInt()) % Scale.MAJOR.length]) + 48, 127), beat.length(length * 2 - 1, 2)); //new Note(r.nextInt()
+                    int rootNote = (key instanceof MajorKey)? (Scale.MAJOR[Math.abs(r.nextInt()) % Scale.MAJOR.length]):
+                            (Scale.MINOR_NATURAL[Math.abs(r.nextInt()) % Scale.MINOR_NATURAL.length]);
+                    getInstrument().playNote(new Note(rootNote + 48 + key.getRoot(), 127), beat.length(length * 2 - 1, 2));
                     length = (int) Math.pow(2, ((Math.abs(r.nextInt()) % 4)));
                     
                     total = 0;
