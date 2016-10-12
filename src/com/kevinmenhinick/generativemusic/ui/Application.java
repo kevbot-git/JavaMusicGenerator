@@ -2,6 +2,8 @@ package com.kevinmenhinick.generativemusic.ui;
 
 import com.kevinmenhinick.generativemusic.Generator;
 import com.kevinmenhinick.generativemusic.exception.GeneratorException;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -11,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.border.EmptyBorder;
 
 public class Application extends javax.swing.JFrame {
 
@@ -19,9 +23,12 @@ public class Application extends javax.swing.JFrame {
     private static JButton btnGenerate;
     private static JButton btnStop;
     
+    private static JPanel pnlMain;
     private static JPanel pnlBottom;
+    private static JPanel pnlTop;
     
     public Application() {
+        super("Java Music Generator");
         try {
             generator = new Generator();
         } catch(GeneratorException e) {
@@ -38,23 +45,32 @@ public class Application extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         
-        super.setSize(320, 240);
+        super.setSize(480, 320);
         super.setResizable(false);
         super.setLocation(getCenterPoint(this));
 
-        pnlBottom = new JPanel(new GridLayout(2, 1));
-        pnlBottom.setSize(320, 80);
+        pnlMain = new JPanel(new BorderLayout());
+        pnlMain.setBorder(new EmptyBorder(8, 8, 8, 8));
+        pnlBottom = new JPanel(new GridLayout(1, 2, 8, 8));
+        pnlTop = new JPanel(new BorderLayout(8, 8));
         
         btnGenerate = new JButton("Start generating");
         btnStop = new JButton("Stop");
     }
     
     private void addComponents() {
-        pnlBottom.add(btnGenerate);
-        pnlBottom.add(btnStop);
+        pnlTop.add(new JSlider(JSlider.VERTICAL), BorderLayout.EAST);
         
-        getContentPane().add(pnlBottom);
-        pack();
+        pnlBottom.add(btnStop);
+        pnlBottom.add(btnGenerate);
+
+        pnlMain.add(pnlTop, BorderLayout.CENTER);
+        
+        pnlMain.add(pnlBottom, BorderLayout.SOUTH);
+        
+        //pnlMain.add();
+        
+        getContentPane().add(pnlMain);
     }
     
     private void setListeners() {

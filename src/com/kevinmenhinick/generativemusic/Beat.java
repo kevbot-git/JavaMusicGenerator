@@ -13,7 +13,7 @@ public class Beat {
     }
     
     public int length(int numerator, int denominator) {
-        return (6000 / this.tempo() / denominator * numerator);
+        return (60000 / this.tempo() / denominator * numerator);
     }
     
     public int tempo() {

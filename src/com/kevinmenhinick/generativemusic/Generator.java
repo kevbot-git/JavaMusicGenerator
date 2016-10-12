@@ -23,23 +23,40 @@ public class Generator implements Runnable {
         System.out.println("Tempo: " + beat.tempo());
         Synth.nextChannel = 0;
         syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
+        
+        // Drone track
         syncedTracks.add(new Track(new Synth(), beat) {
             int total = 0;
             @Override
             public void generateOnBeat(Beat beat) {
-                total++;
-                if(total % 8 == 1)
-                    getInstrument().playChord(Chord.createMinor(new Note((r.nextInt() % 2 == 0)? 48: 55, 127)), beat.length(16, 1));
-                //System.out.println("Total: " + total);
+                System.out.println("Total: " + ++total);
+                getInstrument().playNote(new Note(36, 127), beat.length(9, 10));
             }
         });
+        
+        // Chord track
         syncedTracks.add(new Track(new Synth(), beat) {
             int total = 0;
             @Override
             public void generateOnBeat(Beat beat) {
-                total++;
-                getInstrument().playNote(new Note(36, 127), beat.length(1, 1));
-                //System.out.println("Total: " + total);
+                if(total++ % 8 == 0)
+                    getInstrument().playChord(Chord.createMinor(new Note((r.nextInt() % 2 == 0)? 48: 55, 127)), beat.length(2, 1));
+            }
+        });
+        
+        //Melody track
+        syncedTracks.add(new Track(new Synth(), beat) {
+            int total = 0;
+            int length = (int) Math.pow(2, ((Math.abs(r.nextInt()) % 4) + 1));
+            @Override
+            public void generateOnBeat(Beat beat) {
+                if(++total == length) {
+                    System.out.println(length);
+                    getInstrument().playNote(new Note((Scale.MINOR_NATURAL[Math.abs(r.nextInt()) % Scale.MINOR_NATURAL.length]) + 48, 127), beat.length(length * 2 - 1, 2)); //new Note(r.nextInt()
+                    length = (int) Math.pow(2, ((Math.abs(r.nextInt()) % 4)));
+                    
+                    total = 0;
+                }
             }
         });
     }

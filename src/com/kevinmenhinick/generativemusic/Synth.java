@@ -24,41 +24,49 @@ public class Synth {
     }
     
     public void playNote(Note note, int millis) {
-        try {
-            ShortMessage msg = new ShortMessage();
-            msg.setMessage(ShortMessage.NOTE_ON, channel, note.getNote(), note.getVelocity());
-            receiver.send(msg, -1);
-            Thread.sleep(millis);
-            msg = new ShortMessage();
-            msg.setMessage(ShortMessage.NOTE_OFF, channel, note.getNote(), note.getVelocity());
-            receiver.send(msg, -1);
-        } catch(InterruptedException e) { } catch (InvalidMidiDataException ex) {
-            Logger.getLogger(Synth.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        (new Thread(){
+            public void run() {
+                try {
+                    ShortMessage msg = new ShortMessage();
+                    msg.setMessage(ShortMessage.NOTE_ON, channel, note.getNote(), note.getVelocity());
+                    receiver.send(msg, -1);
+                    Thread.sleep(millis);
+                    msg = new ShortMessage();
+                    msg.setMessage(ShortMessage.NOTE_OFF, channel, note.getNote(), note.getVelocity());
+                    receiver.send(msg, -1);
+                } catch(InterruptedException e) { } catch (InvalidMidiDataException ex) {
+                    Logger.getLogger(Synth.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }).start();
     }
     
     public void playChord(Chord chord, int millis, int strumTime) {
-        try {
-            Iterator<Note> it = chord.getIterator();
-            while(it.hasNext()) {
-                Note n = it.next();
-                ShortMessage msg = new ShortMessage();
-                msg.setMessage(ShortMessage.NOTE_ON, channel, n.getNote(), n.getVelocity());
-                receiver.send(msg, -1);
-                if(strumTime > 0) Thread.sleep(strumTime);
+        (new Thread() {
+            public void run() {
+                try {
+                    Iterator<Note> it = chord.getIterator();
+                    while(it.hasNext()) {
+                        Note n = it.next();
+                        ShortMessage msg = new ShortMessage();
+                        msg.setMessage(ShortMessage.NOTE_ON, channel, n.getNote(), n.getVelocity());
+                        receiver.send(msg, -1);
+                        if(strumTime > 0) Thread.sleep(strumTime);
+                    }
+                    Thread.sleep(millis);
+                    it = chord.getIterator();
+                    while(it.hasNext()) {
+                        ShortMessage msg = new ShortMessage();
+                        msg.setMessage(ShortMessage.NOTE_OFF, channel, it.next().getNote(), 0);
+                        receiver.send(msg, -1);
+                    }
+                } catch(InterruptedException e) {
+
+                } catch (InvalidMidiDataException ex) {
+                    Logger.getLogger(Synth.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-            Thread.sleep(millis);
-            it = chord.getIterator();
-            while(it.hasNext()) {
-                ShortMessage msg = new ShortMessage();
-                msg.setMessage(ShortMessage.NOTE_OFF, channel, it.next().getNote(), 0);
-                receiver.send(msg, -1);
-            }
-        } catch(InterruptedException e) {
-            
-        } catch (InvalidMidiDataException ex) {
-            Logger.getLogger(Synth.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }).start();
     }
     
     public void playChord(Chord chord, int millis) {
