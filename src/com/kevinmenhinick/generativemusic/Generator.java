@@ -40,7 +40,7 @@ public class Generator implements Runnable {
             @Override
             public void generateOnBeat(Beat beat) {
                 if(total++ % 8 == 0)
-                    getInstrument().playChord(Chord.createMinor(new Note((r.nextInt() % 2 == 0)? 48: 55, 127)), beat.length(2, 1));
+                    getInstrument().playChord(Chord.createMajor(new Note((r.nextInt() % 2 == 0)? 48: 55, 127)), beat.length(2, 1));
             }
         });
         
@@ -52,7 +52,7 @@ public class Generator implements Runnable {
             public void generateOnBeat(Beat beat) {
                 if(++total == length) {
                     System.out.println(length);
-                    getInstrument().playNote(new Note((Scale.MINOR_NATURAL[Math.abs(r.nextInt()) % Scale.MINOR_NATURAL.length]) + 48, 127), beat.length(length * 2 - 1, 2)); //new Note(r.nextInt()
+                    getInstrument().playNote(new Note((Scale.MAJOR[Math.abs(r.nextInt()) % Scale.MAJOR.length]) + 48, 127), beat.length(length * 2 - 1, 2)); //new Note(r.nextInt()
                     length = (int) Math.pow(2, ((Math.abs(r.nextInt()) % 4)));
                     
                     total = 0;
