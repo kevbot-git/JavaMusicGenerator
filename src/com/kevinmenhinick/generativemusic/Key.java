@@ -8,7 +8,7 @@ public abstract class Key {
     private ArrayList<Integer> notes;
     
     public Key(int rootNote) {
-        this.rootNote = rootNote % 12;
+        this.rootNote = Math.abs(rootNote) % 12;
     }
     
     public abstract Key relative();

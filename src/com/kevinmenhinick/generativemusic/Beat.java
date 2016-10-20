@@ -2,11 +2,11 @@ package com.kevinmenhinick.generativemusic;
 
 public class Beat {
     
-    private int tempo;
+    private Integer tempo;
     private int beat;
     private int of;
     
-    public Beat(int tempo, int beatsPerBar) {
+    public Beat(Integer tempo, int beatsPerBar) {
         this.tempo = tempo;
         beat = 1;
         of = beatsPerBar;
@@ -18,6 +18,10 @@ public class Beat {
     
     public int tempo() {
         return tempo;
+    }
+    
+    public void setTempo(Integer tempo) {
+        this.tempo = tempo;
     }
     
     public int beat() {

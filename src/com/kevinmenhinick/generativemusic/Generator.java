@@ -3,12 +3,8 @@ package com.kevinmenhinick.generativemusic;
 import com.kevinmenhinick.generativemusic.exception.GeneratorException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Generator implements Runnable {
     
@@ -17,12 +13,12 @@ public class Generator implements Runnable {
     private boolean playing;
     private Key key;
     private Beat beat;
+    private BeatAction beatAction;
     
     public Generator() throws GeneratorException {
         Random r = new Random();
-        key = new MajorKey(Math.abs(r.nextInt()));
-        beat = new Beat(randRange(r, 110, 300), 4);
-        System.out.println("Tempo: " + beat.tempo() + ", Key: " + key.of());
+        key = (r.nextBoolean())? new MajorKey(Math.abs(r.nextInt())): new MinorKey(Math.abs(r.nextInt()));
+        beat = new Beat(randRange(r, 110, 250), 4);//120, 4);//randRange(r, 110, 300), 4);
         Synth.nextChannel = 0;
         syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
         
@@ -47,7 +43,8 @@ public class Generator implements Runnable {
                             key = key.modulate((Math.abs(r.nextInt()) % 6) * 2 - 5);
                         else
                             key = key.relative();
-                        System.out.println("New key: " + key.of());
+                        if(beatAction != null)
+                            beatAction.onChordChange(key.of());
                     }
                     
                     // Play chord
@@ -96,11 +93,17 @@ public class Generator implements Runnable {
             t.stop();
     }
     
+    public void setBeatAction(BeatAction beatAction) {
+        this.beatAction = beatAction;
+    }
+    
     @Override
     public void run() {
         do {
             try {
                 Thread.sleep(60000 / beat.tempo());
+                if(beatAction != null)
+                    (new Thread(new BeatActionRunner(beatAction))).start();
                 synchronized (beat) {
                     beat.nextBeat();
                     beat.notifyAll();
@@ -115,5 +118,9 @@ public class Generator implements Runnable {
     
     public static int randRange(Random r, int min, int max) {
         return (Math.abs(r.nextInt()) % (max - min) + min);
+    }
+    
+    public int getTempo() {
+        return this.beat.tempo();
     }
 }

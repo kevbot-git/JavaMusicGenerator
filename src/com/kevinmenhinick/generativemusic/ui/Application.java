@@ -1,5 +1,6 @@
 package com.kevinmenhinick.generativemusic.ui;
 
+import com.kevinmenhinick.generativemusic.BeatAction;
 import com.kevinmenhinick.generativemusic.Generator;
 import com.kevinmenhinick.generativemusic.exception.GeneratorException;
 import java.awt.BorderLayout;
@@ -11,7 +12,13 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.border.EmptyBorder;
@@ -23,12 +30,20 @@ public class Application extends javax.swing.JFrame {
     private static JButton btnGenerate;
     private static JButton btnStop;
     
+    private static JPanel pnlTempo;
+    private static JLabel lblTempo;
+    private static JPanel pnlKey;
+    private static JLabel lblKey;
+    
     private static JPanel pnlMain;
     private static JPanel pnlBottom;
     private static JPanel pnlTop;
     
+    private static Color colButton = new Color(240, 240, 250);
+
     public Application() {
-        super("Java Music Generator");
+        super("Java Music Generator - development version");
+        
         try {
             generator = new Generator();
         } catch(GeneratorException e) {
@@ -43,7 +58,7 @@ public class Application extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")                         
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         
         super.setSize(480, 320);
         super.setResizable(false);
@@ -54,12 +69,25 @@ public class Application extends javax.swing.JFrame {
         pnlBottom = new JPanel(new GridLayout(1, 2, 8, 8));
         pnlTop = new JPanel(new BorderLayout(8, 8));
         
+        pnlTempo = new JPanel();
+        lblTempo = new JLabel("0bpm");
+        pnlKey = new JPanel();
+        lblKey = new JLabel("Key: -");
+        lblKey.setFont(lblKey.getFont().deriveFont(32f));
+        
         btnGenerate = new JButton("Start generating");
         btnStop = new JButton("Stop");
+        btnGenerate.setBackground(colButton);
+        btnStop.setBackground(colButton);
+        btnStop.setEnabled(false);
     }
     
     private void addComponents() {
-        pnlTop.add(new JSlider(JSlider.VERTICAL), BorderLayout.EAST);
+        pnlTempo.add(lblTempo);
+        pnlTop.add(pnlTempo, BorderLayout.NORTH);
+        
+        pnlKey.add(lblKey);
+        pnlTop.add(pnlKey, BorderLayout.CENTER);
         
         pnlBottom.add(btnStop);
         pnlBottom.add(btnGenerate);
@@ -68,12 +96,22 @@ public class Application extends javax.swing.JFrame {
         
         pnlMain.add(pnlBottom, BorderLayout.SOUTH);
         
-        //pnlMain.add();
-        
         getContentPane().add(pnlMain);
     }
     
     private void setListeners() {
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                generator.stop();
+                setTitle("Closing...");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) { }
+                System.exit(0);;
+            }
+        });
+        
         btnGenerate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -83,8 +121,29 @@ public class Application extends javax.swing.JFrame {
                     } catch(GeneratorException ex) {
                         System.exit(0);
                     }
+                    
+                    generator.setBeatAction(new BeatAction() {
+                        @Override
+                        public void onBeat() {
+                            try {
+                                btnGenerate.setBackground(new Color(125, 125, 250));
+                                Thread.sleep(100);
+                                btnGenerate.setBackground(colButton);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+
+                        @Override
+                        public void onChordChange(String chord) {
+                            lblKey.setText("Key: " + chord);
+                        }
+                    });
+                    
                     generator.start();
-                    btnStop.setBackground(Color.RED);
+                    lblTempo.setText(generator.getTempo() + "bpm");
+                    btnStop.setEnabled(true);
+                    btnGenerate.setEnabled(false);
                 }
             }
         });
@@ -92,7 +151,8 @@ public class Application extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 generator.stop();
-                btnStop.setBackground(new Color(238, 238, 238));
+                btnStop.setEnabled(false);
+                btnGenerate.setEnabled(true);
             }
         });
     }
