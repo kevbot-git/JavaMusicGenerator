@@ -21,7 +21,7 @@ public class Generator implements Runnable {
         this.device = device;
         Random r = new Random();
         key = (r.nextBoolean())? new MajorKey(Math.abs(r.nextInt())): new MinorKey(Math.abs(r.nextInt()));
-        beat = new Beat(randRange(r, 110, 250), 4);//120, 4);//randRange(r, 110, 300), 4);
+        beat = new Beat(randRange(r, 110, 250), 4);
         Synth.nextChannel = 0;
         syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
         

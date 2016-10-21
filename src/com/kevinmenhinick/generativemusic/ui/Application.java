@@ -6,14 +6,22 @@ import com.kevinmenhinick.generativemusic.exception.GeneratorException;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -53,7 +61,7 @@ public class Application extends javax.swing.JFrame {
     private static Color colButton = new Color(240, 240, 250);
 
     public Application() {
-        super("Java Music Generator - development version");
+        super("Java Music Generator by Kevin Menhinick");
         
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         
@@ -98,7 +106,8 @@ public class Application extends javax.swing.JFrame {
         pnlTop = new JPanel(new GridLayout(4, 1, 8, 8));
         pnlTop.setBorder(new EmptyBorder(8, 8, 8, 8));
         
-        lblHelp = new JLabel("Need help?");
+        lblHelp = new JLabel("<html><font color=\"#0000CF\"><u>Need Help?</u></font></html>");
+        lblHelp.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         for (MidiDevice.Info i: devices) {
             if (i.getDescription().equals("External MIDI Port")) {
@@ -153,6 +162,15 @@ public class Application extends javax.swing.JFrame {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) { }
                 System.exit(0);;
+            }
+        });
+        
+        lblHelp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI("https://github.com/kevbot-git/JavaMusicGenerator#usage"));
+                } catch (IOException | URISyntaxException ex) { }
             }
         });
         
