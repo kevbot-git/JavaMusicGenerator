@@ -1,6 +1,7 @@
 package com.kevinmenhinick.generativemusic;
 
 import java.util.Random;
+import javax.sound.midi.MidiDevice;
 
 public class Drums extends Synth {
     
@@ -17,8 +18,8 @@ public class Drums extends Synth {
     public static final int TOM_1 = 41;
     public static final int TOM_2 = 43;
     
-    public Drums() {
-        super();
+    public Drums(MidiDevice.Info device) {
+        super(device);
     }
     
     public static int randomBassHit() {

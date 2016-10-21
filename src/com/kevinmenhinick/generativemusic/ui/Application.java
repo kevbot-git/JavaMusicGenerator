@@ -14,9 +14,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Receiver;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,6 +37,8 @@ public class Application extends javax.swing.JFrame {
     private static JButton btnGenerate;
     private static JButton btnStop;
     
+    private static JLabel lblHelp;
+    private static JComboBox<MidiDevice.Info> selOutput; 
     private static JPanel pnlTempo;
     private static JLabel lblTempo;
     private static JPanel pnlKey;
@@ -39,13 +48,34 @@ public class Application extends javax.swing.JFrame {
     private static JPanel pnlBottom;
     private static JPanel pnlTop;
     
+    private static ArrayList<MidiDevice.Info> devices;
+    
     private static Color colButton = new Color(240, 240, 250);
 
     public Application() {
         super("Java Music Generator - development version");
         
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        
+        devices = new ArrayList<MidiDevice.Info>(Arrays.asList(MidiSystem.getMidiDeviceInfo()));
+        for (int i = 0; i < devices.size(); i++) {
+
+            try {
+                MidiDevice receiverDevice = MidiSystem.getMidiDevice(devices.get(i));
+                receiverDevice.open();
+                Receiver receiver = receiverDevice.getReceiver();
+                if (receiver == null)
+                    throw new GeneratorException();
+            } catch (MidiUnavailableException | GeneratorException e) {
+                devices.remove(devices.get(i));
+            }
+        }
+        MidiDevice.Info[] arr = new MidiDevice.Info[devices.size()];
+        devices.toArray(arr);
+        selOutput = new JComboBox<MidiDevice.Info>(arr);
+        
         try {
-            generator = new Generator();
+            generator = new Generator((MidiDevice.Info) selOutput.getSelectedItem());
         } catch(GeneratorException e) {
             System.exit(0);
         }
@@ -58,22 +88,30 @@ public class Application extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")                         
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        
         super.setSize(480, 320);
         super.setResizable(false);
         super.setLocation(getCenterPoint(this));
 
         pnlMain = new JPanel(new BorderLayout());
         pnlMain.setBorder(new EmptyBorder(8, 8, 8, 8));
-        pnlBottom = new JPanel(new GridLayout(1, 2, 8, 8));
-        pnlTop = new JPanel(new BorderLayout(8, 8));
+        pnlBottom = new JPanel(new GridLayout(1, 3, 8, 8));
+        pnlTop = new JPanel(new GridLayout(4, 1, 8, 8));
+        pnlTop.setBorder(new EmptyBorder(8, 8, 8, 8));
+        
+        lblHelp = new JLabel("Need help?");
+        
+        for (MidiDevice.Info i: devices) {
+            if (i.getDescription().equals("External MIDI Port")) {
+                selOutput.setSelectedItem(i);
+            }
+        }
         
         pnlTempo = new JPanel();
         lblTempo = new JLabel("0bpm");
+        lblTempo.setFont(lblTempo.getFont().deriveFont(24f));
         pnlKey = new JPanel();
         lblKey = new JLabel("Key: -");
-        lblKey.setFont(lblKey.getFont().deriveFont(32f));
+        lblKey.setFont(lblKey.getFont().deriveFont(24f));
         
         btnGenerate = new JButton("Start generating");
         btnStop = new JButton("Stop");
@@ -83,12 +121,18 @@ public class Application extends javax.swing.JFrame {
     }
     
     private void addComponents() {
+        
+        pnlTop.add(new JLabel(""));
+        
         pnlTempo.add(lblTempo);
-        pnlTop.add(pnlTempo, BorderLayout.NORTH);
+        pnlTop.add(pnlTempo);
         
         pnlKey.add(lblKey);
-        pnlTop.add(pnlKey, BorderLayout.CENTER);
+        pnlTop.add(pnlKey);
+
+        pnlTop.add(selOutput);
         
+        pnlBottom.add(lblHelp);
         pnlBottom.add(btnStop);
         pnlBottom.add(btnGenerate);
 
@@ -117,7 +161,7 @@ public class Application extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 if(!generator.isPlaying()) {
                     try {
-                        generator = new Generator();
+                        generator = new Generator((MidiDevice.Info) selOutput.getSelectedItem());
                     } catch(GeneratorException ex) {
                         System.exit(0);
                     }
@@ -142,8 +186,10 @@ public class Application extends javax.swing.JFrame {
                     
                     generator.start();
                     lblTempo.setText(generator.getTempo() + "bpm");
+                    lblKey.setText("Key: " + generator.getKey());
                     btnStop.setEnabled(true);
                     btnGenerate.setEnabled(false);
+                    selOutput.setEnabled(false);
                 }
             }
         });
@@ -153,6 +199,7 @@ public class Application extends javax.swing.JFrame {
                 generator.stop();
                 btnStop.setEnabled(false);
                 btnGenerate.setEnabled(true);
+                selOutput.setEnabled(true);
             }
         });
     }

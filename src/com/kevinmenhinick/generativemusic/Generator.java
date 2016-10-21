@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import javax.sound.midi.MidiDevice;
 
 public class Generator implements Runnable {
     
@@ -14,8 +15,10 @@ public class Generator implements Runnable {
     private Key key;
     private Beat beat;
     private BeatAction beatAction;
+    private MidiDevice.Info device;
     
-    public Generator() throws GeneratorException {
+    public Generator(MidiDevice.Info device) throws GeneratorException {
+        this.device = device;
         Random r = new Random();
         key = (r.nextBoolean())? new MajorKey(Math.abs(r.nextInt())): new MinorKey(Math.abs(r.nextInt()));
         beat = new Beat(randRange(r, 110, 250), 4);//120, 4);//randRange(r, 110, 300), 4);
@@ -23,7 +26,7 @@ public class Generator implements Runnable {
         syncedTracks = Collections.synchronizedList(new ArrayList<Track>());
         
         // Drone track
-        syncedTracks.add(new Track(new Synth(), beat) {
+        syncedTracks.add(new Track(new Synth(device), beat) {
             int total = 0;
             @Override
             public void generateOnBeat(Beat beat) {
@@ -32,7 +35,7 @@ public class Generator implements Runnable {
         });
         
         // Chord track
-        syncedTracks.add(new Track(new Synth(), beat) {
+        syncedTracks.add(new Track(new Synth(device), beat) {
             int total = 0;
             @Override
             public void generateOnBeat(Beat beat) {
@@ -60,7 +63,7 @@ public class Generator implements Runnable {
         });
         
         //Melody track
-        syncedTracks.add(new Track(new Synth(), beat) {
+        syncedTracks.add(new Track(new Synth(device), beat) {
             int total = 0;
             int length = (int) Math.pow(2, ((Math.abs(r.nextInt()) % 4) + 1));
             @Override
@@ -118,6 +121,10 @@ public class Generator implements Runnable {
     
     public static int randRange(Random r, int min, int max) {
         return (Math.abs(r.nextInt()) % (max - min) + min);
+    }
+    
+    public String getKey() {
+        return key.of();
     }
     
     public int getTempo() {

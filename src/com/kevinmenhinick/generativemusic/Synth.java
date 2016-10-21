@@ -18,8 +18,10 @@ public class Synth {
     private Receiver receiver;
     private MidiDevice receiverDevice;
     private int channel;
+    private MidiDevice.Info device;
     
-    public Synth() {
+    public Synth(MidiDevice.Info device) {
+        this.device = device;
         this.channel = nextChannel++;
     }
     
@@ -75,25 +77,16 @@ public class Synth {
     
     public void open() throws GeneratorException {
         try {
-            boolean first = true;
-            for (MidiDevice.Info info: MidiSystem.getMidiDeviceInfo()) {
-                if (info.getName().equals("LoopBe Internal MIDI")) {
-                    if (!first) {
-                        receiverDevice = MidiSystem.getMidiDevice(info);
-                        receiverDevice.open();
-                        receiver = receiverDevice.getReceiver();
-                    } else {
-                        first = false;
-                    }
-                }
-            }
+            receiverDevice = MidiSystem.getMidiDevice(device);
+            receiverDevice.open();
+            receiver = receiverDevice.getReceiver();
             
-            if (receiverDevice == null)
-                throw new GeneratorException("Driver not found. Have you installed LoopBe yet?");
+            if (receiverDevice == null || receiver == null)
+                throw new GeneratorException("Device couldn't be opened");
             
         } catch(MidiUnavailableException e) {
             System.out.println(e);
-            throw new GeneratorException();
+            throw new GeneratorException("Device couldn't be opened. " + e);
         }
     }
     
