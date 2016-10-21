@@ -4,9 +4,7 @@ import com.kevinmenhinick.generativemusic.BeatAction;
 import com.kevinmenhinick.generativemusic.Generator;
 import com.kevinmenhinick.generativemusic.exception.GeneratorException;
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -16,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -32,10 +29,8 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.border.EmptyBorder;
 
 public class Application extends javax.swing.JFrame {
@@ -107,7 +102,6 @@ public class Application extends javax.swing.JFrame {
         pnlTop.setBorder(new EmptyBorder(8, 8, 8, 8));
         
         lblHelp = new JLabel("<html><font color=\"#0000CF\"><u>Need Help?</u></font></html>");
-        lblHelp.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         for (MidiDevice.Info i: devices) {
             if (i.getDescription().equals("External MIDI Port")) {
