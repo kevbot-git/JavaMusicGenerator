@@ -1,6 +1,9 @@
 # JavaMusicGenerator
 A MIDI music generator for my Creative Audio project
 
+## Download
+Grab the latest version by clicking [here](https://github.com/kevbot-git/JavaMusicGenerator/blob/master/dist/JavaMusicGenerator.jar?raw=true) or finding it in this repo's /dist/ directory.
+
 ## Usage
 #### 1. Setup virtual MIDI
 + Mac
